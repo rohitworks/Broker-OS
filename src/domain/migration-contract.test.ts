@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/202609160001_core_foundation.sql"), "utf8");
 const activationMigration = readFileSync(resolve(process.cwd(), "supabase/migrations/202609160002_property_activation.sql"), "utf8");
+const micrositeMigration = readFileSync(resolve(process.cwd(), "supabase/migrations/202609160003_property_microsite.sql"), "utf8");
 
 describe("Day 2 migration contract", () => {
   it("contains every Core MVP entity and tenant boundary", () => {
@@ -13,6 +14,14 @@ describe("Day 2 migration contract", () => {
     expect(migration).toContain("enable row level security");
     expect(migration).toContain("current_business_id()");
     expect(migration.match(/same_business_fk/g)?.length).toBeGreaterThanOrEqual(25);
+  });
+
+  it("keeps microsite state aligned and inquiry writes server-only", () => {
+    expect(micrositeMigration).toContain("sync_property_page()");
+    expect(micrositeMigration).toContain("create_public_property_inquiry");
+    expect(micrositeMigration).toContain("property is unavailable for inquiries");
+    expect(micrositeMigration).toContain("to service_role");
+    expect(micrositeMigration).toContain("from public, anon, authenticated");
   });
 
   it("enforces property activation in the database", () => {

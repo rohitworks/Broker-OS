@@ -1,6 +1,6 @@
 # Broker OS
 
-Technical Core MVP for a residential brokerage, implemented from the approved 10-day PRD. This repository currently contains the completed **Day 1 through Day 3** foundations.
+Technical Core MVP for a residential brokerage, implemented from the approved 10-day PRD. This repository currently contains the completed **Day 1 through Day 4** foundations.
 
 ## Day 1 scope
 
@@ -31,7 +31,17 @@ Requirement intake, matching, WhatsApp, public microsites, and all post-core cap
 - Database-enforced verification and activation requirements
 - Activation blocked unless consent, pricing, configuration, verification, and approved media are present
 
-The Day 4 public property microsite is intentionally not included.
+The Day 5 requirement intake and RID administration are intentionally not included yet.
+
+## Day 4 scope
+
+- Dynamic, mobile-first `/p/[PID]` property pages
+- Allowlisted public data model that excludes contacts, internal notes, exact unit data, object keys, and private documents
+- Approved media delivery through five-minute signed R2 reads
+- No-index/no-follow headers and metadata
+- Idempotent interest, question, and create-requirement actions
+- Consent, inbound communication, lead, and one-operating-hour task recording
+- Closed property state that disables property inquiries and offers the Day 5 requirement path
 
 ## Local setup
 

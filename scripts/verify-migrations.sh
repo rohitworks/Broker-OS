@@ -26,12 +26,14 @@ done
 create schema auth;
 create role anon nologin;
 create role authenticated nologin;
+create role service_role nologin;
 create table auth.users (id uuid primary key default gen_random_uuid());
 create or replace function auth.uid() returns uuid language sql stable as 'select null::uuid';
 SQL
 
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160001_core_foundation.sql >/dev/null
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160002_property_activation.sql >/dev/null
+"$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160003_property_microsite.sql >/dev/null
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/seed.sql >/dev/null
 
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test >/dev/null <<'SQL'
@@ -58,7 +60,32 @@ do $$ declare activated public.properties; begin
     raise exception 'unexpected activation result';
   end if;
 end $$;
+
+do $$ declare page_count integer; begin
+  select count(*) into page_count from public.property_pages where slug = 'PID-WH-R-00001' and inquiries_enabled;
+  if page_count <> 1 then raise exception 'active property page was not created'; end if;
+end $$;
+
+select public.create_public_property_inquiry('PID-WH-R-00001', 'Test Tenant', '+919876599999', 'tenant@example.test', 'INTERESTED', 'Please arrange a call', true, '60000000-0000-4000-8000-000000000001');
+select public.create_public_property_inquiry('PID-WH-R-00001', 'Test Tenant', '+919876599999', 'tenant@example.test', 'INTERESTED', 'Please arrange a call', true, '60000000-0000-4000-8000-000000000001');
+
+do $$ declare lead_count integer; begin
+  select count(*) into lead_count from public.leads where source_key = '60000000-0000-4000-8000-000000000001';
+  if lead_count <> 1 then raise exception 'duplicate public inquiry was created'; end if;
+end $$;
+
+update public.properties set status = 'RENTED' where id = '30000000-0000-4000-8000-000000000001';
+
+do $$ declare enabled boolean; begin
+  select inquiries_enabled into enabled from public.property_pages where slug = 'PID-WH-R-00001';
+  if enabled then raise exception 'closed property page still accepts inquiries'; end if;
+  begin
+    perform public.create_public_property_inquiry('PID-WH-R-00001', 'Test Tenant', '+919876599999', '', 'INTERESTED', '', true, '60000000-0000-4000-8000-000000000002');
+    raise exception 'closed property inquiry unexpectedly succeeded';
+  exception when others then
+    if sqlerrm <> 'property is unavailable for inquiries' then raise; end if;
+  end;
+end $$;
 SQL
 
-echo "Database migrations, seed, PID allocation, and activation guards passed."
-
+echo "Database migrations, PID activation, microsite lifecycle, and inquiry guards passed."
