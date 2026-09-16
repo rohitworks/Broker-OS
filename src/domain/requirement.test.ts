@@ -1,0 +1,3 @@
+import { expect, test } from "vitest"; import { requirementSchema } from "./requirement";
+test("normalises valid requirement", () => expect(requirementSchema.safeParse({name:"Vikram",phone:"+919876500102",email:"",transactionType:"RENT",localities:"Whitefield, Brookefield",propertyTypes:"Apartment",bhkMin:"2",bhkMax:"2",budgetMin:"35000",budgetMax:"48000",timeline:"2026-10-01",parking:true,consent:true,source:"Referral"}).success).toBe(true));
+test("rejects invalid budget", () => expect(requirementSchema.safeParse({name:"Vikram",phone:"+919876500102",email:"",transactionType:"RENT",localities:"Whitefield",propertyTypes:"Apartment",bhkMin:"2",bhkMax:"2",budgetMin:"48000",budgetMax:"35000",timeline:"",parking:false,consent:true,source:"Referral"}).success).toBe(false));
