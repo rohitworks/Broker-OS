@@ -1,0 +1,4 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+export function verifyWhatsAppSignature(raw:string, signature:string|null, secret:string){if(!signature?.startsWith("sha256="))return false;const expected=createHmac("sha256",secret).update(raw).digest("hex");const actual=signature.slice(7);return actual.length===expected.length&&timingSafeEqual(Buffer.from(actual),Buffer.from(expected));}
+export function shortlistTemplate(to:string,rid:string,items:{pid:string;url:string}[]){return{messaging_product:"whatsapp",to,type:"template",template:{name:"broker_shortlist",language:{code:"en"},components:[{type:"body",parameters:[{type:"text",text:rid},{type:"text",text:items.map(x=>`${x.pid}: ${x.url}`).join("\n")}]}]}}}
+export function callbackKey(status:any){return `wa-status:${status.id}:${status.status}`}

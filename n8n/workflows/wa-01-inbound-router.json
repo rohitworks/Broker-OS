@@ -1,0 +1,1 @@
+{"name":"WA-01 Inbound Router","nodes":[{"name":"Webhook","type":"n8n-nodes-base.webhook","parameters":{"path":"broker-os/whatsapp"}},{"name":"Validate and deduplicate","type":"n8n-nodes-base.httpRequest","parameters":{"url":"={{$env.BROKER_OS_URL}}/api/webhooks/whatsapp"}}],"connections":{}}

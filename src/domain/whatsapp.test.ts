@@ -1,0 +1,3 @@
+import{expect,test}from"vitest";import{createHmac}from"node:crypto";import{verifyWhatsAppSignature,shortlistTemplate}from"./whatsapp";
+test("validates WhatsApp signatures",()=>{const raw='{}',s='secret',sig='sha256='+createHmac('sha256',s).update(raw).digest('hex');expect(verifyWhatsAppSignature(raw,sig,s)).toBe(true);expect(verifyWhatsAppSignature(raw,'sha256=bad',s)).toBe(false)});
+test("builds concise shortlist template",()=>{const x=shortlistTemplate('+919876500102','RID-WH-T-00001',[{pid:'PID-WH-R-00001',url:'https://x/p/a'}]);expect(x.template.components[0].parameters[1].text).toContain('PID-WH-R-00001')});

@@ -1,0 +1,1 @@
+{"name":"WA-03 Shortlist","nodes":[{"name":"Approved shortlist trigger","type":"n8n-nodes-base.webhook"},{"name":"Send template","type":"n8n-nodes-base.httpRequest"}],"connections":{}}
