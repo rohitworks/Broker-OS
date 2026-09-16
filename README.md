@@ -1,6 +1,6 @@
 # Broker OS
 
-Technical Core MVP for a residential brokerage, implemented from the approved 10-day PRD. This repository currently contains the completed **Day 1 and Day 2** foundations.
+Technical Core MVP for a residential brokerage, implemented from the approved 10-day PRD. This repository currently contains the completed **Day 1 through Day 3** foundations.
 
 ## Day 1 scope
 
@@ -20,7 +20,18 @@ Technical Core MVP for a residential brokerage, implemented from the approved 10
 - Supabase password authentication, refreshed sessions, protected `/admin`, and sign-out
 - Realistic draft property, requirement, contact, consent, and business seed data
 
-Property/media intake UI, matching, WhatsApp, and all post-core capabilities are intentionally not included yet.
+Requirement intake, matching, WhatsApp, public microsites, and all post-core capabilities are intentionally not included yet.
+
+## Day 3 scope
+
+- Authenticated property list, intake form, and property record screen
+- Permanent PID allocation on draft creation
+- Private direct-to-R2 uploads with short-lived signed URLs and server-side object verification
+- Operator media approval
+- Database-enforced verification and activation requirements
+- Activation blocked unless consent, pricing, configuration, verification, and approved media are present
+
+The Day 4 public property microsite is intentionally not included.
 
 ## Local setup
 
@@ -40,3 +51,7 @@ The landing page uses safe local public defaults. Server-only Supabase and R2 cl
 ## Verification
 
 Run `pnpm verify` for TypeScript, lint, unit tests, and a production build. For a production-equivalent container, copy `.env.example` to `.env`, replace its values, then run `docker compose up --build`.
+
+Run `pnpm test:e2e` for the Playwright browser smoke journey.
+
+Run `pnpm test:db` for an isolated PostgreSQL migration, seed, PID allocation, and activation-guard test. It uses PostgreSQL 15 installed by Homebrew and never starts a persistent service.

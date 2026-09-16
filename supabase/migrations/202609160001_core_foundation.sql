@@ -339,22 +339,22 @@ $$;
 
 create or replace function public.allocate_public_reference() returns trigger
 language plpgsql security definer set search_path = public, pg_temp as $$
-declare business_code text; counter_key text; next_value bigint; role_code text;
+declare business_code text; ref_counter_key text; next_value bigint; role_code text;
 begin
   if new.public_id is not null then return new; end if;
   select code into strict business_code from public.businesses where id = new.business_id;
   if tg_table_name = 'properties' then
     role_code := case new.transaction_type when 'RENT' then 'R' else 'S' end;
-    counter_key := 'PID-' || role_code;
+    ref_counter_key := 'PID-' || role_code;
   else
     role_code := case new.transaction_type when 'RENT' then 'T' else 'B' end;
-    counter_key := 'RID-' || role_code;
+    ref_counter_key := 'RID-' || role_code;
   end if;
   insert into public.reference_counters (business_id, counter_key, last_value)
-  values (new.business_id, counter_key, 1)
+  values (new.business_id, ref_counter_key, 1)
   on conflict (business_id, counter_key) do update set last_value = public.reference_counters.last_value + 1
   returning last_value into next_value;
-  new.public_id := split_part(counter_key, '-', 1) || '-' || business_code || '-' || role_code || '-' || lpad(next_value::text, 5, '0');
+  new.public_id := split_part(ref_counter_key, '-', 1) || '-' || business_code || '-' || role_code || '-' || lpad(next_value::text, 5, '0');
   return new;
 end
 $$;

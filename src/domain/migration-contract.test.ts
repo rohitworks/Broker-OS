@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/202609160001_core_foundation.sql"), "utf8");
+const activationMigration = readFileSync(resolve(process.cwd(), "supabase/migrations/202609160002_property_activation.sql"), "utf8");
 
 describe("Day 2 migration contract", () => {
   it("contains every Core MVP entity and tenant boundary", () => {
@@ -12,6 +13,12 @@ describe("Day 2 migration contract", () => {
     expect(migration).toContain("enable row level security");
     expect(migration).toContain("current_business_id()");
     expect(migration.match(/same_business_fk/g)?.length).toBeGreaterThanOrEqual(25);
+  });
+
+  it("enforces property activation in the database", () => {
+    expect(activationMigration).toContain("validate_property_activation()");
+    expect(activationMigration).toContain("at least one approved media item is required");
+    expect(activationMigration).toContain("verify_and_activate_property");
   });
 
   it("installs immutable references, lifecycle guards, and audit triggers", () => {
