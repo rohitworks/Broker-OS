@@ -1,0 +1,16 @@
+services:
+  broker-os:
+    image: ${BROKER_OS_IMAGE:-broker-os:latest}
+    env_file: .env
+    restart: unless-stopped
+    networks: [edge]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:3000/api/health"]
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data", "caddy_config:/config"]
+    networks: [edge]
+networks: { edge: {} }
+volumes: { caddy_data: {}, caddy_config: {} }
