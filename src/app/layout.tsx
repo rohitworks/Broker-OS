@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { CSSProperties, ReactNode } from "react";
+import { AuthHashRedirect } from "@/components/auth-hash-redirect";
 import { getPublicConfig } from "@/lib/config/public";
 import "./globals.css";
 
@@ -13,5 +14,5 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const config = getPublicConfig();
   const brandStyle = { "--brand-primary": config.brandPrimary, "--brand-accent": config.brandAccent } as CSSProperties;
-  return <html lang="en"><body style={brandStyle}>{children}</body></html>;
+  return <html lang="en"><body style={brandStyle}><AuthHashRedirect />{children}</body></html>;
 }

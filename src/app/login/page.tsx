@@ -2,7 +2,7 @@ import { getPublicConfig } from "@/lib/config/public";
 import { safeNextPath } from "@/lib/auth/redirect";
 import { signIn } from "./actions";
 
-type LoginPageProps = { searchParams: Promise<{ error?: string; next?: string }> };
+type LoginPageProps = { searchParams: Promise<{ error?: string; next?: string; reset?: string }> };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const config = getPublicConfig();
@@ -14,6 +14,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--brand-primary)]">Secure operator access</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Sign in to {config.appName}</h1>
         <p className="mt-2 text-sm leading-6 text-slate-600">Use the operator account provisioned through Supabase Auth.</p>
+        {params.reset === "success" ? <p role="status" className="mt-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">Password updated. Sign in with your new password.</p> : null}
         {params.error ? <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{params.error === "missing" ? "Enter both email and password." : "Email or password is incorrect."}</p> : null}
         <form action={signIn} className="mt-7 grid gap-5">
           <input type="hidden" name="next" value={next} />
@@ -25,4 +26,3 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     </main>
   );
 }
-
