@@ -1,0 +1,19 @@
+services:
+  broker-os:
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Broker OS Test}
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-https://1381.tech}
+      NEXT_PUBLIC_DEFAULT_LOCALITY: ${NEXT_PUBLIC_DEFAULT_LOCALITY:-Test Market}
+      NEXT_PUBLIC_SUPPORT_PHONE: ${NEXT_PUBLIC_SUPPORT_PHONE:-+910000000000}
+      NEXT_PUBLIC_BUSINESS_LOCALE: ${NEXT_PUBLIC_BUSINESS_LOCALE:-en-IN}
+      NEXT_PUBLIC_BUSINESS_TIMEZONE: ${NEXT_PUBLIC_BUSINESS_TIMEZONE:-Asia/Kolkata}
+      NEXT_PUBLIC_BUSINESS_CURRENCY: ${NEXT_PUBLIC_BUSINESS_CURRENCY:-INR}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.broker-os.rule=Host(`1381.tech`) || Host(`www.1381.tech`)
+      - traefik.http.routers.broker-os.entrypoints=websecure
+      - traefik.http.routers.broker-os.tls.certresolver=letsencrypt
+      - traefik.http.services.broker-os.loadbalancer.server.port=3000
