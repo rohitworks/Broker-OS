@@ -12,12 +12,13 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const hash = new URLSearchParams(window.location.hash.slice(1));
-    const token = hash.get("access_token");
+    const token = hash.get("access_token") || window.sessionStorage.getItem("broker_os_recovery_token");
     const type = hash.get("type");
-    if (!token || (type !== "recovery" && type !== "invite")) {
+    if (!token || (hash.size > 0 && type !== "recovery" && type !== "invite")) {
       setMessage("This recovery link is invalid or has expired. Request a new one from your administrator.");
       return;
     }
+    window.sessionStorage.setItem("broker_os_recovery_token", token);
     setAccessToken(token);
     setReady(true);
     setMessage("");
@@ -36,6 +37,7 @@ export default function ResetPasswordPage() {
       const body = await response.json().catch(() => null) as { message?: string } | null;
       return setMessage(body?.message || "Could not update the password. Request a new link and try again.");
     }
+    window.sessionStorage.removeItem("broker_os_recovery_token");
     window.location.assign("/login?reset=success");
   }
 
