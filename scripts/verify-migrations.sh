@@ -76,7 +76,14 @@ do $$ declare lead_count integer; begin
   if lead_count <> 1 then raise exception 'duplicate public inquiry was created'; end if;
 end $$;
 
-update public.properties set status = 'RENTED' where id = '30000000-0000-4000-8000-000000000001';
+insert into public.distribution_events (business_id,idempotency_key,property_id,contact_id,channel,delivery_status)
+values ('10000000-0000-4000-8000-000000000001','day9-close-ledger','30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000002','WHATSAPP','DELIVERED');
+
+do $$ begin
+  if not public.close_property('30000000-0000-4000-8000-000000000001','RENTED') then raise exception 'first closure must apply'; end if;
+  if public.close_property('30000000-0000-4000-8000-000000000001','RENTED') then raise exception 'repeated closure must be idempotent'; end if;
+  if not exists (select 1 from public.distribution_events where idempotency_key='day9-close-ledger' and closure_notified_at is not null) then raise exception 'ledger closure notification missing'; end if;
+end $$;
 
 do $$ declare enabled boolean; begin
   select inquiries_enabled into enabled from public.property_pages where slug = 'PID-WH-R-00001';

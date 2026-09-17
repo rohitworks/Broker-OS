@@ -1,0 +1,1 @@
+import{expect,test}from"vitest";import{retryDelayMinutes,isRecoverableStatus}from"./recovery";test("backs off safe retries",()=>expect(retryDelayMinutes(6)).toBe(32));test("flags recoverable delivery failures",()=>expect(isRecoverableStatus('FAILED')).toBe(true));
