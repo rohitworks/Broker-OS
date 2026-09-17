@@ -1,0 +1,1 @@
+{"name":"WA-06 Closure","nodes":[{"name":"Closed PID trigger","type":"n8n-nodes-base.webhook"},{"name":"Notify ledger recipients once","type":"n8n-nodes-base.httpRequest"}],"connections":{}}

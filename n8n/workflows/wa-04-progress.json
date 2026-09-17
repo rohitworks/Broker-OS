@@ -1,0 +1,1 @@
+{"name":"WA-04 Progress","nodes":[{"name":"Eligible active contacts","type":"n8n-nodes-base.scheduleTrigger"},{"name":"Record truthful delivery","type":"n8n-nodes-base.httpRequest"}],"connections":{}}

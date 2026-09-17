@@ -35,6 +35,7 @@ SQL
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160002_property_activation.sql >/dev/null
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160003_property_microsite.sql >/dev/null
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160004_requirement_activation.sql >/dev/null
+"$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/migrations/202609160005_distribution_closure.sql >/dev/null
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test -f supabase/seed.sql >/dev/null
 
 "$PG_BIN/psql" -v ON_ERROR_STOP=1 -p "$PG_PORT" -d broker_os_test >/dev/null <<'SQL'
