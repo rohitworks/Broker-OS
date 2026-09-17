@@ -1,25 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { type FormEvent, useEffect, useState } from "react";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [accessToken, setAccessToken] = useState("");
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("Verifying your secure link…");
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    void supabase.auth.getSession().then(({ data, error }) => {
-      if (error || !data.session) {
-        setMessage("This recovery link is invalid or has expired. Request a new one from your administrator.");
-        return;
-      }
-      setReady(true);
-      setMessage("");
-    });
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const token = hash.get("access_token");
+    const type = hash.get("type");
+    if (!token || (type !== "recovery" && type !== "invite")) {
+      setMessage("This recovery link is invalid or has expired. Request a new one from your administrator.");
+      return;
+    }
+    setAccessToken(token);
+    setReady(true);
+    setMessage("");
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -27,9 +28,14 @@ export default function ResetPasswordPage() {
     if (password.length < 12) return setMessage("Use a password of at least 12 characters.");
     if (password !== confirmPassword) return setMessage("The passwords do not match.");
     setMessage("Saving your new password…");
-    const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) return setMessage(error.message);
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key || !accessToken) return setMessage("This recovery session is unavailable. Request a new link.");
+    const response = await fetch(`${url}/auth/v1/user`, { method: "PUT", headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null) as { message?: string } | null;
+      return setMessage(body?.message || "Could not update the password. Request a new link and try again.");
+    }
     window.location.assign("/login?reset=success");
   }
 
